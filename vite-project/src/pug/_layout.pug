@@ -1,0 +1,78 @@
+- var BASE_PATH = '/assets/'
+- var img = BASE_PATH + 'images/'
+
+//------------------------------------------------
+//- var override
+//------------------------------------------------
+block var_block
+
+doctype
+html(lang="ja")
+  head
+    //------------------------------------------------
+    //- meta
+    //------------------------------------------------
+    block meta_block
+      meta(charset="utf-8")
+      meta(http-equiv="X-UA-Compatible", content="IE=Edge,chrome=1")
+      meta(name="apple-mobile-web-app-capable", content="yes")
+      meta(name="format-detection", content="telephone=no")
+      meta(name="robots" content="noindex")
+      //- link(rel="shortcut icon", href="/assets/images/favicon.ico" type="image/x-icon")
+      
+
+    //------------------------------------------------
+    //- viewport
+    //------------------------------------------------
+    block viewport
+      meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1.0")
+
+    //------------------------------------------------
+    //- TITLE
+    //------------------------------------------------
+    title!=title
+
+    //------------------------------------------------
+    //- CSS COMMON
+    //------------------------------------------------
+    link(rel="stylesheet", href="/assets/scss/base.scss")
+
+    //------------------------------------------------
+    //- CSS BLOCK
+    //------------------------------------------------
+    block headCSS_block
+
+    //- JSでviewportを書く場合
+    //- script(type="text/javascript" src=PUBLIC_URL + "/assets/js/viewport.js" + buildtime)
+    //------------------------------------------------
+    //- JS BLOCK
+    //------------------------------------------------
+    block headJS_block
+
+
+
+  //- BODYタグ storybookから表示する場合bodyタグが消えてしまうのでisStoryをセットしてdivにする
+  #page-top(class=[bodyClass])
+    //------------------------------------------------
+    //- header
+    //------------------------------------------------
+    //- include _header
+
+    //------------------------------------------------
+    //- wrapper
+    //------------------------------------------------
+    .wrapper
+      block content
+      
+
+    //------------------------------------------------
+    //- footer
+    //------------------------------------------------
+    //- include _footer
+
+
+    //------------------------------------------------
+    //- JS COMMON
+    //------------------------------------------------
+    script(src= BASE_PATH + 'js/common.js' type="module")
+    block footerJS_block

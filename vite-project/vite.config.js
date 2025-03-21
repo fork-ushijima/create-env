@@ -1,51 +1,57 @@
 import { defineConfig } from "vite";
-import path from "path";
+import sassGlobImports from 'vite-plugin-sass-glob-import';
+// import path from "path";
 import globule from "globule"
 import vitePluginPugStatic from "@macropygia/vite-plugin-pug-static";
 import imageminPlugin from 'vite-plugin-imagemin';
 import browserslistToEsbuild from "browserslist-to-esbuild";
 
-
-const inputs = {};
-const documents = globule.find([`./src/**/*.html`, `./src/**/*.pug`], {
-  ignore: [`./src/html/**/_*.html`, `./src/pug/**/_*.pug`],
+const htmlFiles = globule.find('src/**/*.pug', {
+  ignore: [
+    'src/**/_*.pug',
+  ]
 });
-documents.forEach((document) => {
-  const fileName = document.replace(`./src/`, "");
-  const key = path.parse(document).name;
-  inputs[key] = path.resolve(__dirname, "src", fileName);
-});
+// const inputs = {};
+// const documents = globule.find([`./src/**/*.pug`, `./src/**/*.scss`], {
+//   ignore: [`./src/**/_*.pug`, `./src/**/_*.scss`],
+// });
+// documents.forEach((document) => {
+//   const fileName = document.replace(`./src/`, "");
+//   const key = path.parse(document).name;
+//   inputs[key] = path.resolve(__dirname, "src", fileName);
+// });
 
 export default defineConfig({
   root: "src",
-  server: {
-    host: true,
-    port: 3000
-  },
   publicDir: "../public",
   build: {
-    outDir:"../dist", //プロジェクトルートからの相対パス(index.pugからの相対パス)
+    outDir:"../html", //プロジェクトルートからの相対パス(index.pugからの相対パス)
     emptyOutDir: true, //ビルド時の警告を防ぐ
     target: browserslistToEsbuild(),
-    minify: false,
+    cssCodeSplit: true,
     rollupOptions: {
-      input: { ...inputs },
+      input: htmlFiles,
       output: {
+        assetFileNames: (assetInfo) => {
+          let extType = assetInfo.name.split('.')[1];
+          //let extType = path.extname(assetInfo.name);
+          if (/\.(gif|jpeg|jpg|png|svg|webp)$/.test(assetInfo.name)) {
+            return `assets/images/[name][extname]`;
+          }
+          //ビルド時のCSS名を明記してコントロールする
+          if(extType === 'scss' || extType === 'css') {
+            console.log(assetInfo.originalFileName, assetInfo.names);
+            return `assets/css/[name][extname]`;
+          }
+          return 'assets/[name][extname]';
+        },
         entryFileNames: `assets/js/[name].js`,
         chunkFileNames: `assets/js/[name].js`,
-        assetFileNames: (assetInfo) => {
-          if (/\.(gif|jpeg|jpg|png|svg|webp)$/.test(assetInfo.name)) {
-            return `assets/images/[name].[ext]`;
-          }
-          if (/\.css$/.test(assetInfo.name)) {
-            return `assets/css/[name].[ext]`;
-          }
-          return 'assets/[name].[ext]';
-        }
       }
     }
   },
   plugins: [
+    sassGlobImports(),
     vitePluginPugStatic({
       buildOptions: { basedir: "src" },//ルートディレクトリ
       serveOptions: { basedir: "src" }//ルートディレクトリ
